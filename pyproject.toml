@@ -1,7 +1,7 @@
 [project]
 name = "capstone-ids"
 version = "0.1.0"
-description = "Add your description here"
+description = "An intrusion detection system built with the XGBoost library and the CICIDS2017 dataset"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

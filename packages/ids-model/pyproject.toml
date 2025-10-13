@@ -7,7 +7,12 @@ authors = [
     { name = "Lewis Parnell", email = "lewis.g.parnell@gmail.com" }
 ]
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+	"capstone-ids"
+]
+
+[tool.uv.sources]
+capstone-ids = { workspace = true }
 
 [build-system]
 requires = ["uv_build>=0.9.2,<0.10.0"]

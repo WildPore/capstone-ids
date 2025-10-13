@@ -16,7 +16,7 @@ members = [
 [[package]]
 name = "capstone-ids"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "pandas" },
     { name = "ruff" },
@@ -41,6 +41,12 @@ source = { virtual = "apps/ids-cli" }
 name = "ids-model"
 version = "0.1.0"
 source = { editable = "packages/ids-model" }
+dependencies = [
+    { name = "capstone-ids" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "capstone-ids", editable = "." }]
 
 [[package]]
 name = "joblib"
