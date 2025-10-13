@@ -3,6 +3,7 @@
 
 # Data is too large
 data/
+.csv
 
 # Python-generated files
 __pycache__/
