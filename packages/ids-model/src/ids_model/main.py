@@ -1,0 +1,43 @@
+import numpy as np
+import xgboost as xgb
+
+data = np.loadtxt(
+    "./dermatology.data",
+    delimiter=",",
+    converters={33: lambda x: int(x == "?"), 34: lambda x: int(x) - 1},
+)
+sz = data.shape
+
+train = data[: int(sz[0] * 0.7), :]
+test = data[int(sz[0] * 0.7) :, :]
+
+train_X = train[:, :33]
+train_Y = train[:, 34]
+
+test_X = test[:, :33]
+test_Y = test[:, 34]
+
+xg_train = xgb.DMatrix(train_X, label=train_Y)
+xg_test = xgb.DMatrix(test_X, label=test_Y)
+
+param = {}
+
+param["objective"] = "multi:softmax"
+param["eta"] = 0.1
+param["max_depth"] = 6
+param["nthread"] = 4
+param["num_class"] = 6
+
+watchlist = [(xg_train, "train"), (xg_test, "test")]
+num_round = 5
+bst = xgb.train(param, xg_train, num_round, watchlist)
+pred = bst.predict(xg_test)
+error_rate = np.sum(pred != test_Y) / test_Y.shape[0]
+print("Test error using softmax = {}".format(error_rate))
+
+param["objective"] = "multi:softprob"
+bst = xgb.train(param, xg_train, num_round, watchlist)
+pred_prob = bst.predict(xg_test).reshape(test_Y.shape[0], 6)
+pred_label = np.argmax(pred_prob, axis=1)
+error_rate = np.sum(pred_label != test_Y) / test_Y.shape[0]
+print("Test error using softprob = {}".format(error_rate))
