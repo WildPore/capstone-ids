@@ -23,20 +23,37 @@ for file in csv_files:
 
 df = pd.concat(dfs, ignore_index=True)
 
-print("Infinite values per column:")
-print(df.isin([np.inf, -np.inf]).sum())
+df.columns = df.columns.str.strip()
 df.replace([np.inf, -np.inf], np.nan, inplace=True)
+df.fillna(0, inplace=True)
 
-# df.info()
-# df.describe()
-print("\nMissing values:")
-print(df.isnull().sum())
+X = df.drop(["Label"], axis=1)
+y = df["Label"]
 
-print("\n")
-print(df.describe())
+X = X.select_dtypes(include=[np.number])
 
-numeric_cols = df.select_dtypes(include=[np.number]).columns
-df[numeric_cols].hist(figsize=(20, 15), bins=50)
-plt.tight_layout()
-plt.savefig("distributions.png")
-plt.close()
+le = LabelEncoder()
+y_encoded = le.fit_transform(y)
+
+print(f"Number of classes: {len(le.classes_)}")
+print(f"Classes: {le.classes_}")
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded
+)
+
+model = XGBClassifier(
+    objective="multi:softprob",
+    n_estimators=100,
+    max_depth=6,
+    learning_rate=0.1,
+    eval_metric="mlogloss",
+    random_state=42,
+    n_jobs=-1,
+)
+
+model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=True)
+
+y_pred = model.predict(X_test)
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred, target_names=le.classes_))
