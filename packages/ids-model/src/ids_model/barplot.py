@@ -49,8 +49,6 @@ def plot_class_distribution(
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches="tight")
 
-    plt.show()
-
     imbalance_ratio = class_counts.max() / class_counts.min()
 
     return {
