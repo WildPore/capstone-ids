@@ -1,5 +1,6 @@
 .DS_Store
-data/*.csv
+data/*
+MachineLearningCSV.md5
 
 # Python-generated files
 __pycache__/
