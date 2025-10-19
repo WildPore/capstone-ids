@@ -3,7 +3,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-from utils import get_project_root
+from capstone_ids.utils import get_project_root
 
 
 def download_and_unzip():
