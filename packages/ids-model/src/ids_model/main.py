@@ -12,6 +12,10 @@ from xgboost import XGBClassifier
 from capstone_ids.utils import get_project_root
 from ids_model.heatmap import create_correlation_heatmap
 from ids_model.barplot import plot_class_distribution
+from ids_model.violin_plot import (
+    plot_feature_distributions,
+    plot_multi_feature_comparison,
+)
 
 data_path = get_project_root() / "data"
 file_pattern = str(data_path) + "/*.csv"
@@ -36,6 +40,26 @@ y = df["Label"]
 
 plot_class_distribution(y)
 
+from ids_model.heatmap import get_top_correlated_features
+
+top_features = get_top_correlated_features(df, "Label", n=10)
+print("\nGenerating violin plots for top features...")
+feature_stats = plot_feature_distributions(
+    df,
+    features=top_features[:5],
+    label_col="Label",
+    save_path="feature_distributions.png",
+    max_classes=10,
+)
+
+print("\nFeature distribution statistics:")
+for feature, stats in feature_stats.items():
+    print(f"\n{feature}:")
+    for class_label, class_stats in stats.items():
+        print(
+            f" {class_label}: mean={class_stats['mean']:.4f}, median={class_stats['median']:.4f}"
+        )
+
 
 X = X.select_dtypes(include=[np.number])
 
@@ -48,6 +72,7 @@ print(f"Classes: {le.classes_}")
 X_train, X_test, y_train, y_test = train_test_split(
     X, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded
 )
+
 
 # model = XGBClassifier(
 #     objective="multi:softprob",
