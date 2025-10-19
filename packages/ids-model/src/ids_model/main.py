@@ -11,6 +11,7 @@ from xgboost import XGBClassifier
 
 from capstone_ids.utils import get_project_root
 from ids_model.heatmap import create_correlation_heatmap
+from ids_model.barplot import plot_class_distribution
 
 data_path = get_project_root() / "data"
 file_pattern = str(data_path) + "/*.csv"
@@ -32,6 +33,9 @@ create_correlation_heatmap(df)
 
 X = df.drop(["Label"], axis=1)
 y = df["Label"]
+
+plot_class_distribution(y)
+
 
 X = X.select_dtypes(include=[np.number])
 

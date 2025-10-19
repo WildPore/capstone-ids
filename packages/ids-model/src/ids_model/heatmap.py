@@ -7,10 +7,18 @@ from sklearn.preprocessing import LabelEncoder
 def get_top_correlated_features(df: pd.DataFrame, label_col: str, n: int = 20):
     numeric_df = df.select_dtypes(include=["number"])
 
+    # Remove constant features (zero variance)
+    non_constant_features = numeric_df.columns[numeric_df.std() != 0]
+    numeric_df = numeric_df[non_constant_features]
+
     le = LabelEncoder()
     encoded_labels = le.fit_transform(df[label_col])
 
     correlations_with_target = numeric_df.corrwith(pd.Series(encoded_labels)).abs()
+
+    # Drop NaN values that might result from correlations
+    correlations_with_target = correlations_with_target.dropna()
+
     top_features = (
         correlations_with_target.sort_values(ascending=False).head(n).index.tolist()
     )
